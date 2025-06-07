@@ -22,12 +22,12 @@ fun LazyStackLayout(
     offSetItemScale: Float = 0.8f,
     offsetAlpha: Float = 0.8f,
     key: ((index: Int) -> Any)? = null,
-    itemContent: @Composable LazyStackItemScope.(page: Int) -> Unit
+    itemContent: LazyStackItemScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val stackItemProvider = rememberStackItemProviderLambda(
         state = state,
-        pageContent = itemContent,
+        content = itemContent,
         key = key
     )
     LazyLayout(
@@ -70,75 +70,68 @@ fun LazyStackLayout(
             itemOffset.toPx().roundToInt()
         }
 
+        val itemsToMeasure = listOf(
+            state.currentIndex,
+            (state.currentIndex + 1 + state.itemCount) % state.itemCount,
+            (state.currentIndex - 1 + state.itemCount) % state.itemCount
+        )
         layout(constraints.maxWidth, constraints.maxHeight) {
-            val itemsToMeasure = listOf(
-                state.currentIndex,
-                (state.currentIndex + 1 + state.itemCount) % state.itemCount,
-                (state.currentIndex - 1 + state.itemCount) % state.itemCount
-            )
             val placeables = mutableListOf<Placeable>()
             itemsToMeasure.forEach { index ->
                 val placeable = measure(index, constraints)
                 placeables.addAll(placeable)
             }
-            placeables.forEachIndexed { index, placeable ->
-                when (index) {
-                    0 -> {
-                        //current
-                        val x0 = (constraints.maxWidth - placeable.width) / 2
-                        val y0 = (constraints.maxHeight - placeable.height) / 2
-                        placeable.placeRelativeWithLayer(
-                            x0,
-                            y0,
-                            2f
-                        ) {
-                            // transformOrigin = TransformOrigin(0.5f, 0.5f)
-                            // rotationY = state.swipeOffsetX.value / 10
-                            alpha = 1f
-                            scaleY = 1f
-                            this.translationX = state.swipeOffsetX.value
-                        }
-                    }
+            val x0 = (constraints.maxWidth - placeables[0].width) / 2
+            val y0 = (constraints.maxHeight - placeables[0].height) / 2
+            val centeredItem = placeables[0]
+            val rightItem = placeables[1]
+            val leftItem = placeables[2]
 
-                    1 -> {
-                        //next
-                        val x1 = ((constraints.maxWidth - placeable.width) / 2) + offsetValue
-                        val y1 = (constraints.maxHeight - placeable.height) / 2
-                        placeable.placeRelativeWithLayer(x1, y1, 1f) {
-                            // transformOrigin = TransformOrigin(0.5f, 0.5f)
-                            // rotationY = state.swipeOffsetX.value / 10
-                            // cameraDistance = density.absoluteValue * 2.5f
-                            // shadowElevation = state.swipeOffsetX.value/10
-                            alpha = offsetAlpha
-                            scaleY = offSetItemScale
-                            //this.translationX = -state.swipeOffsetX.value / 10f
-                            //val shadowAlpha = 1f - abs(rotationY / 90f)
-                            // shadowElevation = 8.dp.toPx() * shadowAlpha
-                        }
-                    }
+            centeredItem.placeRelativeWithLayer(
+                x0,
+                y0,
+                2f
+            ) {
+                // transformOrigin = TransformOrigin(0.5f, 0.5f)
+                // rotationY = state.swipeOffsetX.value / 10
+                alpha = 1f
+                scaleY = 1f
+                this.translationX = state.swipeOffsetX.value
+            }
 
-                    2 -> {
-                        //previous
-                        val x2 = ((constraints.maxWidth - placeable.width) / 2) - offsetValue
-                        val y2 = (constraints.maxHeight - placeable.height) / 2
-                        placeable.placeRelativeWithLayer(x2, y2, 1f) {
-                            //  transformOrigin = TransformOrigin(0.5f, 0.5f)
-                            //  rotationY = state.swipeOffsetX.value / 10
-                            alpha = offsetAlpha
-                            scaleY = offSetItemScale
-                            // this.translationX = -state.swipeOffsetX.value / 10f
-                            //    cameraDistance = density.absoluteValue * 2.5f
-                            // val shadowAlpha = 1f - abs(rotationY / 90f)
-                            // shadowElevation = 8.dp.toPx() * shadowAlpha
+            val x1 = ((constraints.maxWidth - placeables[1].width) / 2) + offsetValue
+            val y1 = (constraints.maxHeight - placeables[1].height) / 2
 
-                            //this.translationY = -state.swipeOffsetX.value.coerceAtLeast(0f)
-                            // shadowElevation = state.swipeOffsetX.value/10
-                        }
-                    }
-                }
+            rightItem.placeRelativeWithLayer(x1, y1, 1f) {
+                // transformOrigin = TransformOrigin(0.5f, 0.5f)
+                // rotationY = state.swipeOffsetX.value / 10
+                // cameraDistance = density.absoluteValue * 2.5f
+                // shadowElevation = state.swipeOffsetX.value/10
+                alpha = offsetAlpha
+                scaleY = offSetItemScale
+                //this.translationX = -state.swipeOffsetX.value / 10f
+                //val shadowAlpha = 1f - abs(rotationY / 90f)
+                // shadowElevation = 8.dp.toPx() * shadowAlpha
+            }
 
+
+            val x2 = ((constraints.maxWidth - placeables[2].width) / 2) - offsetValue
+            val y2 = (constraints.maxHeight - placeables[2].height) / 2
+
+            leftItem.placeRelativeWithLayer(x2, y2, 1f) {
+                //  transformOrigin = TransformOrigin(0.5f, 0.5f)
+                //  rotationY = state.swipeOffsetX.value / 10
+                alpha = offsetAlpha
+                scaleY = offSetItemScale
+                // this.translationX = -state.swipeOffsetX.value / 10f
+                //    cameraDistance = density.absoluteValue * 2.5f
+                // val shadowAlpha = 1f - abs(rotationY / 90f)
+                // shadowElevation = 8.dp.toPx() * shadowAlpha
+
+                //this.translationY = -state.swipeOffsetX.value.coerceAtLeast(0f)
+                // shadowElevation = state.swipeOffsetX.value/10
             }
         }
     }
-
 }
+

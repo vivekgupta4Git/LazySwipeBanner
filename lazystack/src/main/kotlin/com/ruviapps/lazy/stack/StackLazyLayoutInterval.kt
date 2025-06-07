@@ -24,5 +24,6 @@ package com.ruviapps.lazy.stack
  */
 class StackLazyLayoutInterval(
     override val key: ((Int) -> Any)?,
+    override val type: ((index: Int) -> Any?),
     val item: LazyStackLayoutComposable
 ) : StackLazyLayoutIntervalContent.Interval

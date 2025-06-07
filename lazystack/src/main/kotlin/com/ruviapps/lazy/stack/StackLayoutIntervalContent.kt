@@ -28,13 +28,29 @@ import androidx.compose.foundation.lazy.layout.MutableIntervalList
  * @see StackLazyLayoutIntervalContent
  */
 class StackLayoutIntervalContent(
-    val itemContent: LazyStackLayoutComposable,
+    val itemContent: LazyStackItemScope.()-> Unit,
     val key: ((Int) -> Any)?,
     val size: Int
-) : StackLazyLayoutIntervalContent<StackLazyLayoutInterval>() {
-    override val intervals: IntervalList<StackLazyLayoutInterval> =
-        MutableIntervalList<StackLazyLayoutInterval>()
-            .apply {
-                addInterval(this@StackLayoutIntervalContent.size, StackLazyLayoutInterval(key = key, item = itemContent))
-            }
+) : StackLazyLayoutIntervalContent<StackLazyLayoutInterval>(), LazyStackItemScope {
+    override val intervals: MutableIntervalList<StackLazyLayoutInterval> = MutableIntervalList<StackLazyLayoutInterval>()
+
+    init {
+        apply(itemContent)
+    }
+
+    override fun items(
+        count: Int,
+        key: ((Int) -> Any)?,
+        contentType: (Int) -> Any?,
+        itemContent: LazyStackLayoutComposable
+    ) {
+        intervals.addInterval(
+            count,
+            StackLazyLayoutInterval(
+                key = key,
+                type = contentType,
+                item = itemContent
+            )
+        )
+    }
 }

@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
  * @see LazyLayoutItemProvider
  */
 @OptIn(ExperimentalFoundationApi::class)
-class StackLazyLayoutItemProvider(
+class StackLazyLayoutItemProviderImpl(
     private val intervalContent: StackLazyLayoutIntervalContent<StackLazyLayoutInterval>
 ) : LazyLayoutItemProvider {
 
@@ -42,8 +42,7 @@ class StackLazyLayoutItemProvider(
     @Composable
     override fun Item(index: Int, key: Any) {
         intervalContent.withInterval(index) { localIndex, content ->
-            // Call the item content function with the appropriate local index and scope.
-            content.item.invoke(stackScopeImpl, localIndex)
+            content.item(stackScopeImpl,localIndex)
         }
     }
 

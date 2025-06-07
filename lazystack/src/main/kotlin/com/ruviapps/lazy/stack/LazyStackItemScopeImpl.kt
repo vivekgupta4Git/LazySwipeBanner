@@ -5,7 +5,7 @@ import androidx.compose.foundation.lazy.layout.MutableIntervalList
 
 class LazyStackItemScopeImpl() : LazyStackItemScope {
     private val _intervalList = MutableIntervalList<StackLazyLayoutInterval>()
-    val intervalList : IntervalList<StackLazyLayoutInterval> = _intervalList
+   // val intervalList : IntervalList<StackLazyLayoutInterval> = _intervalList
     override fun items(
         count: Int,
         key: ((index: Int) -> Any)?,
@@ -16,7 +16,8 @@ class LazyStackItemScopeImpl() : LazyStackItemScope {
             count,
             StackLazyLayoutInterval(
                 key = key,
-                item = itemContent
+                item = itemContent,
+                type = contentType
             )
         )
     }
