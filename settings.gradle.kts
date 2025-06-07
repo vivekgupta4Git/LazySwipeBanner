@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "LazyStackDemo"
 include(":app")
+include(":lazystack")
  
