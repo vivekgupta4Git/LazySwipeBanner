@@ -43,14 +43,14 @@ fun UseLazyStackLayout(modifier: Modifier = Modifier) {
         modifier = modifier,
         state = state
     ) {
-        items(myDataItems) { value ->
+        items(myDataItems.size) { index ->
             Card(
                 modifier = Modifier
                     .size(200.dp),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text(text = value, style = MaterialTheme.typography.headlineMedium)
+                    Text(text = myDataItems[index], style = MaterialTheme.typography.headlineMedium)
                 }
             }
         }

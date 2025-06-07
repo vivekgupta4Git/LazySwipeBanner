@@ -1,19 +1,24 @@
 package com.ruviapps.lazy.stack
 
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.lazy.layout.IntervalList
+import androidx.compose.foundation.lazy.layout.MutableIntervalList
 
 class LazyStackItemScopeImpl() : LazyStackItemScope {
-    private val _items = mutableListOf<@Composable () -> Unit>()
-    val items: List<@Composable () -> Unit> get() = _items
-
+    private val _intervalList = MutableIntervalList<StackLazyLayoutInterval>()
+    val intervalList : IntervalList<StackLazyLayoutInterval> = _intervalList
     override fun items(
         count: Int,
         key: ((index: Int) -> Any)?,
         contentType: (index: Int) -> Any?,
         itemContent: LazyStackLayoutComposable
     ) {
-        repeat(count) { index ->
-            _items.add { this@LazyStackItemScopeImpl.itemContent(index) }
-        }
+       _intervalList.addInterval(
+            count,
+            StackLazyLayoutInterval(
+                key = key,
+                item = itemContent
+            )
+        )
     }
 }
+
