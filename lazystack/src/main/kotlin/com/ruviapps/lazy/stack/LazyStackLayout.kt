@@ -24,7 +24,8 @@ fun LazyStackLayout(
     itemContent: LazyStackItemScope.() -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val stackItemProvider = rememberLazyStackItemProvider(content = itemContent)
+    val stackItemProvider = rememberLazyStackItemProvider(key1 = state.currentIndex, content = itemContent)
+
     LazyLayout(
         { stackItemProvider }, modifier.pointerInput(state.currentIndex) {
             detectHorizontalDragGestures(

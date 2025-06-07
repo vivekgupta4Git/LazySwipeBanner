@@ -37,12 +37,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun UseLazyStackLayout(modifier: Modifier = Modifier) {
-    val myDataItems = remember {
-        List(10) { index -> "Item $index" } // Or fetch from a ViewModel
-    }
+    val myDataItems = List(3) { index -> "Item ${index + 1}" }
+    val state = rememberLazyStackState(myDataItems.size)
     LazyStackLayout(
-        modifier = Modifier,
-        state = LazyStackState(myDataItems)
+        modifier = modifier,
+        state = state
     ) {
         items(myDataItems) { value ->
             Card(

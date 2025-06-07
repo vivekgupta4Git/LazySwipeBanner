@@ -21,15 +21,17 @@ class LazyStackItemProvider(
 }
 
 
+
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun rememberLazyStackItemProvider(
     key1: Any? = null,
     content: LazyStackItemScope.() -> Unit
 ): LazyLayoutItemProvider {
-    val scope = LazyStackItemScopeImpl()
-    scope.content()
     return remember(key1) {
+        val scope = LazyStackItemScopeImpl()
+        scope.content()
         LazyStackItemProvider(scope.items)
     }
 
