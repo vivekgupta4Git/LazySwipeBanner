@@ -1,6 +1,8 @@
 package com.ruviapps.lazy.stack
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -12,24 +14,38 @@ import androidx.compose.ui.unit.IntSize
 
 class LazyStackState(
     val itemCount: Int = 3,
-    initialIndex: Int = 0
+    initialIndex: Int = 0,
+    private val animationSpec: AnimationSpec<Float> = spring()
 ) {
-
+    init {
+        require(itemCount >=3 ){
+            error("Lazy Stack requires at least 3 items.")
+        }
+    }
     var currentIndex by mutableIntStateOf(initialIndex)
         private set
 
     val swipeOffsetX by mutableStateOf(Animatable(0f))
 
     suspend fun rightSwipe(size: IntSize) {
-        swipeOffsetX.animateTo(size.width.toFloat())
+        //animate to right upto the width of the canvas
+        swipeOffsetX.animateTo(size.width.toFloat(),
+            animationSpec = animationSpec)
         currentIndex = wrapIndex(currentIndex - 1)
-        swipeOffsetX.animateTo(0f)
+        //snap to opposite direction so that new card reveal looks more natural
+        swipeOffsetX.snapTo(-size.width.toFloat())
+        //once it snapped to opposite direction bring it to the center again.
+        swipeOffsetX.animateTo(0f,animationSpec)
     }
 
     suspend fun leftSwipe(size: IntSize) {
-        swipeOffsetX.animateTo(-size.width.toFloat())
+        //animate to left upto the width of the canvas
+        swipeOffsetX.animateTo(-size.width.toFloat(),animationSpec)
         currentIndex = wrapIndex(currentIndex + 1)
-        swipeOffsetX.animateTo(0f)
+        //snap to opposite direction so that new card reveal looks more natural
+        swipeOffsetX.snapTo(size.width.toFloat())
+        //once it snapped to opposite direction bring it to the center again.
+        swipeOffsetX.animateTo(0f,animationSpec)
     }
 
     private fun wrapIndex(index: Int): Int {
@@ -46,9 +62,9 @@ class LazyStackState(
 }
 
 @Composable
-fun rememberLazyStackState(itemCount: Int = 3): LazyStackState {
+fun rememberLazyStackState(itemCount: Int = 3,initialIndex: Int = 0,animationSpec: AnimationSpec<Float> = spring()): LazyStackState {
     return rememberSaveable(saver = LazyStackState.Saver(itemCount)) {
-        LazyStackState(itemCount)
+        LazyStackState(itemCount,initialIndex,animationSpec)
     }
 }
 
