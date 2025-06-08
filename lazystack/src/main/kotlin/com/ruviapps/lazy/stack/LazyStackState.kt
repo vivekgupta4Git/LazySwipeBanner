@@ -27,9 +27,9 @@ class LazyStackState(
 
     val swipeOffset by mutableStateOf(Animatable(0f))
 
-    suspend fun rightSwipe(size: IntSize) {
+    suspend fun decreaseIndex(size: IntSize) {
         val (dimension, index) = if (orientation == Orientation.Vertical)
-            Pair(size.height.toFloat(), currentIndex + 1)
+            Pair(size.height.toFloat(), currentIndex - 1)
         else
             Pair(size.width.toFloat(), currentIndex - 1)
 
@@ -41,9 +41,9 @@ class LazyStackState(
         swipeOffset.animateTo(0f)
     }
 
-    suspend fun leftSwipe(size: IntSize) {
+    suspend fun increaseIndex(size: IntSize) {
         val (dimension, index) = if (orientation == Orientation.Vertical)
-            Pair(size.height.toFloat(), currentIndex - 1)
+            Pair(size.height.toFloat(), currentIndex + 1)
         else
             Pair(size.width.toFloat(), currentIndex + 1)  //  swipeOffset.animateTo(-dimension)
         currentIndex = wrapIndex(index)

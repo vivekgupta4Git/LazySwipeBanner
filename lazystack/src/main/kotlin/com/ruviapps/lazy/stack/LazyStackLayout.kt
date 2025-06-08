@@ -3,7 +3,6 @@ package com.ruviapps.lazy.stack
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.lazy.layout.LazyLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,13 +37,13 @@ fun LazyStackLayout(
                     when {
                         state.swipeOffset.value > threshold -> {
                             scope.launch {
-                                state.rightSwipe(size)
+                                state.decreaseIndex(size)
                             }
                         }
 
                         state.swipeOffset.value < -threshold -> {
                             scope.launch {
-                                state.leftSwipe(size)
+                                state.increaseIndex(size)
                             }
                         }
 
@@ -58,7 +57,8 @@ fun LazyStackLayout(
                 },
                 onDrag = { change, dragAmount ->
                     change.consume()
-                    val dragValue = if(state.orientation == Orientation.Vertical) dragAmount.y else dragAmount.x
+                    val dragValue =
+                        if (state.orientation == Orientation.Vertical) dragAmount.y else dragAmount.x
                     scope.launch {
                         state.swipeOffset.snapTo(state.swipeOffset.value + dragValue)
                     }
@@ -70,6 +70,7 @@ fun LazyStackLayout(
         val offsetValue = with(density) {
             itemOffset.toPx().roundToInt()
         }
+
         val itemConstraints = constraints.copy(
             minWidth = 0,
             minHeight = 0,
@@ -89,34 +90,64 @@ fun LazyStackLayout(
         }
         val maxHeight = placeables.maxOf { it.height }
         val maxWidth = placeables.maxOf { it.width }
-        val constraintWidth = maxWidth + offsetValue * 2
-        layout(constraintWidth, maxHeight) {
+        val constraintHeight = if (state.orientation == Orientation.Vertical)
+            maxHeight + offsetValue * 2
+        else
+            maxHeight
+        val constraintWidth = if (state.orientation == Orientation.Vertical)
+            maxWidth
+        else
+            maxWidth + offsetValue * 2
+
+
+
+        layout(constraintWidth, constraintHeight) {
 
             placeables.forEachIndexed { index, placeable ->
+                val baseX = (constraintWidth - placeable.width) / 2
+                val baseY = (constraintHeight - placeable.height) / 2
                 when (index) {
                     0 -> {
-                        //current
-                        val x0 = (constraintWidth - placeable.width) / 2
-                        val y0 = (maxHeight - placeable.height) / 2
+                        //center
                         placeable.placeRelative(
-                            x0,
-                            y0,
+                            baseX,
+                            baseY,
                             2f
                         )
                     }
 
                     1 -> {
                         //next
-                        val x1 = ((constraintWidth - placeable.width) / 2) + offsetValue
-                        val y1 = (maxHeight - placeable.height) / 2
-                        placeable.placeRelative(x1, y1)
+                        val (x, y) = if (state.orientation == Orientation.Vertical) {
+                            // When Vertical:
+                            // x = baseX
+                            // y = baseY + offsetValue
+                            Pair(baseX, baseY + offsetValue)
+                        } else {
+                            // When Horizontal :
+                            // x = baseX + offsetValue
+                            // y = baseY
+                            Pair(baseX + offsetValue, baseY)
+                        }
+
+                        placeable.placeRelative(x, y)
                     }
 
                     2 -> {
                         //previous
-                        val x2 = ((constraintWidth - placeable.width) / 2) - offsetValue
-                        val y2 = (maxHeight - placeable.height) / 2
-                        placeable.placeRelative(x2, y2)
+                        val (x, y) = if (state.orientation == Orientation.Vertical) {
+                            // When Vertical:
+                            // x = baseX
+                            // y = baseY - offsetValue
+                            Pair(baseX, baseY - offsetValue)
+                        } else {
+                            // When Horizontal :
+                            // x = baseX - offsetValue
+                            // y = baseY
+                            Pair(baseX - offsetValue, baseY)
+                        }
+
+                        placeable.placeRelative(x, y)
                     }
 
                 }
