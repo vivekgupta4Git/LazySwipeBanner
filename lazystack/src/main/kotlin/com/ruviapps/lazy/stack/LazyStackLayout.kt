@@ -1,6 +1,8 @@
 package com.ruviapps.lazy.stack
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.lazy.layout.LazyLayout
 import androidx.compose.runtime.Composable
@@ -30,17 +32,17 @@ fun LazyStackLayout(
     )
     LazyLayout(
         itemProvider = stackItemProvider, modifier.pointerInput(state.currentIndex) {
-            detectHorizontalDragGestures(
+            detectDragGestures(
                 onDragEnd = {
                     val threshold = size.width / 3f
                     when {
-                        state.swipeOffsetX.value > threshold -> {
+                        state.swipeOffset.value > threshold -> {
                             scope.launch {
                                 state.rightSwipe(size)
                             }
                         }
 
-                        state.swipeOffsetX.value < -threshold -> {
+                        state.swipeOffset.value < -threshold -> {
                             scope.launch {
                                 state.leftSwipe(size)
                             }
@@ -49,15 +51,16 @@ fun LazyStackLayout(
                         else -> {
                             // Not enough swipe, reset
                             scope.launch {
-                                state.swipeOffsetX.animateTo(0f)
+                                state.swipeOffset.animateTo(0f)
                             }
                         }
                     }
                 },
-                onHorizontalDrag = { change, dragAmount ->
+                onDrag = { change, dragAmount ->
                     change.consume()
+                    val dragValue = if(state.orientation == Orientation.Vertical) dragAmount.y else dragAmount.x
                     scope.launch {
-                        state.swipeOffsetX.snapTo(state.swipeOffsetX.value + dragAmount)
+                        state.swipeOffset.snapTo(state.swipeOffset.value + dragValue)
                     }
                 }
             )

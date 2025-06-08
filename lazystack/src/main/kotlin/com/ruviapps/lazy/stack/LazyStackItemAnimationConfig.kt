@@ -7,9 +7,12 @@ data class LazyStackItemAnimationConfig(
     val alphaCenter: Float = 1f,
     val scaleSide: Float = 0.8f,
     val alphaSide: Float = 0.8f,
-    val cameraDistance: Float = 8f,
-    val transformOrigin: TransformOrigin = TransformOrigin.Companion.Center,
-    val rotationDivisor: Float = 10f
+    val cameraDistance: Float = 2.5f,
+    val transformOriginCenter: TransformOrigin = TransformOrigin.Center,
+    val transformOriginSide : TransformOrigin = TransformOrigin.Center,
+    val rotationDivisor: Float = 10f,
+    val enablePeekAnimation : Boolean = true,
+    val peekDuringAnimationDivisor : Float= 10f
 ) {
     companion object {
         val Default = LazyStackItemAnimationConfig()

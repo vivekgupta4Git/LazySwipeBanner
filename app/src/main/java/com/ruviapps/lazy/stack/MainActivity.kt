@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ruviapps.lazy.stack.ui.theme.LazyStackDemoTheme
@@ -42,9 +44,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun UseLazyStackLayout(modifier: Modifier = Modifier) {
     val myDataItems = List(100) { index -> "Item $index" }
-    val state = rememberLazyStackState(myDataItems.size)
+    val state = rememberLazyStackState(myDataItems.size, orientation = Orientation.Horizontal)
     LazyStackLayout(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         state = state,
         itemOffset = 80.dp
     ) {
@@ -55,6 +57,7 @@ fun UseLazyStackLayout(modifier: Modifier = Modifier) {
                     .lazyStackAnimatedItem(
                         isCenterItem = index == state.currentIndex,
                         state = state,
+                        enableRotation = true,
                     ),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
