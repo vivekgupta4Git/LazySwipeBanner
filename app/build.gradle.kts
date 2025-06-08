@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ruviapps.lazy.stack"
+    namespace = "com.ruviapps.lazy.swipe"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.ruviapps.lazy.stack"
+        applicationId = "com.ruviapps.lazy.swipe"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    implementation(project(path = ":lazystack"))
+    implementation(project(":lazyswipe"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

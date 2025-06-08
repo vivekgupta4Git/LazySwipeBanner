@@ -1,6 +1,5 @@
-package com.ruviapps.lazy.stack.ui.theme
+package com.ruviapps.lazy.swipe.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

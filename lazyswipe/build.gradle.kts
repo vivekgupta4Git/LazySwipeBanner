@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ruviapps.lazy.stack"
+    namespace = "com.ruviapps.lazy.swipe"
     compileSdk = 35
 
     defaultConfig {

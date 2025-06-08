@@ -1,13 +1,17 @@
-package com.ruviapps.lazy.stack
+package com.ruviapps.lazy.swipe
 
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlin.math.absoluteValue
 
-typealias LazyStackLayoutComposable = @Composable (LazyStackItemScope.(Int) -> Unit)
+typealias LazySwipeBannerLayoutComposable = @Composable (LazySwipeBannerItemScope.(Int) -> Unit)
 
 /**
  * Scope for [items] content.
  */
-interface LazyStackItemScope {
+interface LazySwipeBannerItemScope {
     /**
      * Adds a [count] of items.
      *
@@ -28,8 +32,50 @@ interface LazyStackItemScope {
         count: Int,
         key: ((index: Int) -> Any)? = null,
         contentType: (index: Int) -> Any? = { null },
-        itemContent: LazyStackLayoutComposable
+        itemContent: LazySwipeBannerLayoutComposable
     )
+    fun Modifier.lazySwipeBannerAnimatedItem(
+        isCenterItem: Boolean,
+        state: LazySwipeBannerState,
+        enableRotation: Boolean = false,
+        config: LazySwipeBannerItemAnimationConfig = LazySwipeBannerItemAnimationConfig.Default
+    ): Modifier = this.then(
+        Modifier.Companion.graphicsLayer {
+            val rotationY =
+                if (enableRotation) state.swipeOffset.value / config.rotationDivisor.coerceAtLeast(
+                    1f
+                ) else 0f
+            this.rotationY = rotationY
+
+            this.cameraDistance =
+                if (enableRotation) density.absoluteValue * config.cameraDistance else 0f
+
+            if (enableRotation)
+                this.transformOrigin =
+                    if (isCenterItem) config.transformOriginCenter else config.transformOriginSide
+
+            val scale = if (isCenterItem) config.scaleCenter else config.scaleSide
+            val alpha = if (isCenterItem) config.alphaCenter else config.alphaSide
+            val translation = state.swipeOffset.value
+
+            this.scaleX = scale
+            this.scaleY = scale
+            this.alpha = alpha
+            if (state.orientation == Orientation.Horizontal)
+                this.translationX = if (isCenterItem) translation else
+                    if (config.enablePeekAnimation)
+                        -translation / config.peekDuringAnimationDivisor.coerceAtLeast(1f)
+                    else
+                        0f
+            else
+                this.translationY =
+                    if (isCenterItem) translation else
+                        if (config.enablePeekAnimation)
+                            -translation / config.peekDuringAnimationDivisor.coerceAtLeast(1f)
+                        else
+                            0f
+        })
+
 }
 
 /**
@@ -47,11 +93,11 @@ interface LazyStackItemScope {
  *   will be considered compatible.
  * @param itemContent the content displayed by a single item
  */
-inline fun <T> LazyStackItemScope.items(
+inline fun <T> LazySwipeBannerItemScope.items(
     items: List<T>,
     noinline key: ((item: T) -> Any)? = null,
     noinline contentType: (item: T) -> Any? = { null },
-    crossinline itemContent: @Composable (LazyStackItemScope.(T) -> Unit)
+    crossinline itemContent: @Composable (LazySwipeBannerItemScope.(T) -> Unit)
 ) = items(
     count = items.size,
     key = if (key != null) { index: Int -> key(items[index]) } else null,
@@ -75,11 +121,11 @@ inline fun <T> LazyStackItemScope.items(
  *   will be considered compatible.
  * @param itemContent the content displayed by a single item
  */
-inline fun <T> LazyStackItemScope.itemsIndexed(
+inline fun <T> LazySwipeBannerItemScope.itemsIndexed(
     items: List<T>,
     noinline key: ((index: Int, item: T) -> Any)? = null,
     crossinline contentType: (index: Int, item: T) -> Any? = { _, _ -> null },
-    crossinline itemContent: @Composable LazyStackItemScope.(index: Int, item: T) -> Unit,
+    crossinline itemContent: @Composable LazySwipeBannerItemScope.(index: Int, item: T) -> Unit,
 ) =
     items(
         count = items.size,
@@ -104,11 +150,11 @@ inline fun <T> LazyStackItemScope.itemsIndexed(
  *   will be considered compatible.
  * @param itemContent the content displayed by a single item
  */
-inline fun <T> LazyStackItemScope.items(
+inline fun <T> LazySwipeBannerItemScope.items(
     items: Array<T>,
     noinline key: ((item: T) -> Any)? = null,
     noinline contentType: (item: T) -> Any? = { null },
-    crossinline itemContent: @Composable LazyStackItemScope.(item: T) -> Unit,
+    crossinline itemContent: @Composable LazySwipeBannerItemScope.(item: T) -> Unit,
 ) =
     items(
         count = items.size,

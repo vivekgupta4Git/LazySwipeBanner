@@ -1,4 +1,4 @@
-package com.ruviapps.lazy.stack.ui.theme
+package com.ruviapps.lazy.swipe.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
