@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    'maven-publish'
 }
 
 android {
@@ -52,4 +53,15 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.github.vivekgupta4Git"
+            artifactId = "LazySwipeBanner"
+            version = "1.0.2"
+
+            from(components["java"])
+        }
+    }
 }
