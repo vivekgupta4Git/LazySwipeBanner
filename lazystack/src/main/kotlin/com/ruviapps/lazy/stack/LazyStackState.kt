@@ -14,8 +14,7 @@ import androidx.compose.ui.unit.IntSize
 
 class LazyStackState(
     val itemCount: Int = 3,
-    initialIndex: Int = 0,
-    private val animationSpec: AnimationSpec<Float> = spring()
+    initialIndex: Int = 0
 ) {
     init {
         require(itemCount >=3 ){
@@ -29,23 +28,22 @@ class LazyStackState(
 
     suspend fun rightSwipe(size: IntSize) {
         //animate to right upto the width of the canvas
-        swipeOffsetX.animateTo(size.width.toFloat(),
-            animationSpec = animationSpec)
+        swipeOffsetX.animateTo(size.width.toFloat())
         currentIndex = wrapIndex(currentIndex - 1)
         //snap to opposite direction so that new card reveal looks more natural
         swipeOffsetX.snapTo(-size.width.toFloat())
         //once it snapped to opposite direction bring it to the center again.
-        swipeOffsetX.animateTo(0f,animationSpec)
+        swipeOffsetX.animateTo(0f)
     }
 
     suspend fun leftSwipe(size: IntSize) {
         //animate to left upto the width of the canvas
-        swipeOffsetX.animateTo(-size.width.toFloat(),animationSpec)
+        swipeOffsetX.animateTo(-size.width.toFloat())
         currentIndex = wrapIndex(currentIndex + 1)
         //snap to opposite direction so that new card reveal looks more natural
         swipeOffsetX.snapTo(size.width.toFloat())
         //once it snapped to opposite direction bring it to the center again.
-        swipeOffsetX.animateTo(0f,animationSpec)
+        swipeOffsetX.animateTo(0f)
     }
 
     private fun wrapIndex(index: Int): Int {
@@ -62,9 +60,9 @@ class LazyStackState(
 }
 
 @Composable
-fun rememberLazyStackState(itemCount: Int = 3,initialIndex: Int = 0,animationSpec: AnimationSpec<Float> = spring()): LazyStackState {
+fun rememberLazyStackState(itemCount: Int = 3,initialIndex: Int = 0): LazyStackState {
     return rememberSaveable(saver = LazyStackState.Saver(itemCount)) {
-        LazyStackState(itemCount,initialIndex,animationSpec)
+        LazyStackState(itemCount,initialIndex)
     }
 }
 
