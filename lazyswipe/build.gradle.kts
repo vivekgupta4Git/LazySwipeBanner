@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    `maven-publish`
 }
 
 android {
@@ -14,7 +15,12 @@ android {
         version = 1
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    // This is important for publication
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -52,4 +58,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "com.ruviapps"
+                artifactId = "lazy.swipe"
+                version = "1.0.2"
+            }
+        }
+    }
 }
