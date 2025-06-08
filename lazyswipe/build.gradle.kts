@@ -54,14 +54,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+ 
+
+group = "com.ruviapps"
+version = "1.0.2"
+
 publishing {
     publications {
-        create<MavenPublication>("maven") {
-            groupId = "com.github.vivekgupta4Git"
-            artifactId = "LazySwipeBanner"
-            version = "1.0.2"
-
-            from(components["java"])
+        create<MavenPublication>("release") {
+            from(components["java"]) // or components["release"] for Android
+            groupId = "com.ruviapps"
+            artifactId = "lazy.swipe"
+            version = "1.0.0"
         }
     }
 }
