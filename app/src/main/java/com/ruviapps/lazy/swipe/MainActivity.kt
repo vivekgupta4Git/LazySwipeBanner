@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ruviapps.lazy.swipe.ui.theme.LazyStackDemoTheme
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun UseLazyStackLayout(modifier: Modifier = Modifier) {
     val myDataItems = List(100) { index -> "Item $index" }
-    val state = rememberLazyStackState(myDataItems.size, orientation = Orientation.Vertical)
+    val state = rememberLazyStackState(myDataItems.size, orientation = Orientation.Horizontal)
     LazySwipeBanner(
         modifier = modifier,
         state = state,
@@ -57,7 +58,12 @@ fun UseLazyStackLayout(modifier: Modifier = Modifier) {
                     .lazySwipeBannerAnimatedItem(
                         isCenterItem = index == state.currentIndex,
                         state = state,
-                        enableRotation = false,
+                        enableRotation = true,
+                        config = LazySwipeBannerItemAnimationConfig.Default.copy(
+                            transformOriginCenter = TransformOrigin(1.5f,1.5f),
+                            cameraDistance = 10f,
+
+                        )
                     ),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
