@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,9 +47,9 @@ fun UseLazyStackLayout(modifier: Modifier = Modifier) {
     val myDataItems = List(100) { index -> "Item $index" }
     val state = rememberLazyStackState(myDataItems.size, orientation = Orientation.Horizontal)
     LazyStackLayout(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         state = state,
-        itemOffset = 80.dp
+        itemOffset = 100.dp
     ) {
         items(myDataItems.size) { index ->
             Card(
@@ -57,7 +58,7 @@ fun UseLazyStackLayout(modifier: Modifier = Modifier) {
                     .lazyStackAnimatedItem(
                         isCenterItem = index == state.currentIndex,
                         state = state,
-                        enableRotation = true,
+                        enableRotation = false,
                     ),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
