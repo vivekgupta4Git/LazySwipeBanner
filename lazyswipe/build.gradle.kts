@@ -1,10 +1,13 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.vanniktech.plugin)
+    signing
     `maven-publish`
 }
-
 android {
     namespace = "com.ruviapps.lazy.swipe"
     compileSdk = 35
@@ -15,10 +18,11 @@ android {
         version = 1
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    // This is important for publication
     publishing {
-        singleVariant("release") {
+        multipleVariants {
             withSourcesJar()
+            allVariants()
+            withJavadocJar()
         }
     }
     buildTypes {
@@ -59,7 +63,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-afterEvaluate {
+/*afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>("release") {
@@ -67,8 +71,28 @@ afterEvaluate {
 
                 groupId = "com.ruviapps"
                 artifactId = "lazy.swipe"
-                version = "1.0.2"
+                version = "1.0.3"
             }
         }
     }
+}*/
+/*mavenPublishing {
+    configure(AndroidSingleVariantLibrary(
+        // the published variant
+        variant = "release",
+        // whether to publish a sources jar
+        sourcesJar = true,
+        // whether to publish a javadoc jar
+        publishJavadocJar = true,
+    ))
+}*/
+
+// build.gradle.kts
+
+//region Fix Gradle warning about signing tasks using publishing task outputs without explicit dependencies
+// https://github.com/gradle/gradle/issues/26091
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    val signingTasks = tasks.withType<Sign>()
+    mustRunAfter(signingTasks)
 }
+//endregion

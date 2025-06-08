@@ -1,6 +1,8 @@
 package com.ruviapps.lazy.swipe
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +27,7 @@ class LazySwipeBannerState(
     var currentIndex by mutableIntStateOf(initialIndex)
         private set
 
-    val swipeOffset by mutableStateOf(Animatable(0f))
+    internal val swipeOffset by mutableStateOf(Animatable(0f))
 
     suspend fun decreaseIndex(size: IntSize) {
         val (dimension, index) = if (orientation == Orientation.Vertical)
@@ -55,6 +57,22 @@ class LazySwipeBannerState(
 
     private fun wrapIndex(index: Int): Int {
         return (index + itemCount) % itemCount
+    }
+
+    suspend fun snapTo(index: Int) {
+        if (currentIndex == index) return
+        currentIndex = wrapIndex(index)
+        swipeOffset.snapTo(0f)
+    }
+
+    suspend fun animateTo(
+        index: Int, animationSpec: AnimationSpec<Float> =
+            spring()
+    ) {
+        if (currentIndex == index) return
+        swipeOffset.animateTo(1000f, animationSpec)
+        currentIndex = wrapIndex(index)
+        swipeOffset.animateTo(0f, animationSpec)
     }
 
     companion object {

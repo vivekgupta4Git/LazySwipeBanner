@@ -29,17 +29,8 @@ A custom Jetpack Compose layout that mimics a swipeable looping card/banner stac
 ## 📦 Installation
 
 ```gradle
-dependencyResolutionManagement {
-		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-		repositories {
-			mavenCentral()
-			maven { url 'https://jitpack.io' }
-		}
-	}
-```
-```
 dependencies {
-	implementation 'com.github.vivekgupta4git:LazySwipeBanner:1.0.0'
+	implementation 'com.ruviapps:lazy.swipe:1.0.3'
 }
 ```
 ---
@@ -54,7 +45,7 @@ val myDataItems = List(100) { index -> "Item $index" }
         state = state,
         itemOffset = 100.dp
     ) {
-        items(myDataItems.size) { index ->
+        items(myDataItems) { value ->
             Card(
                 modifier = Modifier
                     .size(200.dp)
@@ -66,7 +57,7 @@ val myDataItems = List(100) { index -> "Item $index" }
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text(text = myDataItems[index], style = MaterialTheme.typography.headlineMedium)
+                    Text(text = value, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
