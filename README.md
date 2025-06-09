@@ -3,10 +3,10 @@
 
 A custom Jetpack Compose layout that mimics a swipeable looping card/banner stack. Built on top of `LazyLayout`, it supports horizontal or vertical swipes, smooth animations, and efficient item management.
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/1b248fb6-a5a7-42ce-934b-06b389c1d655" width=200 height=400/>
-    <img src="https://github.com/user-attachments/assets/ed39f638-daf4-4e22-b885-2e5585d3d4dd" width=200 height=400/>
-
+  <img src="https://github.com/user-attachments/assets/1b248fb6-a5a7-42ce-934b-06b389c1d655" width=200 height=400/ alt="LazySwipeBanner">
+    <img src="https://github.com/user-attachments/assets/ed39f638-daf4-4e22-b885-2e5585d3d4dd" width=200 height=400/ alt="Rotation">
 </div>
+
 ---
 
 ## ✨ Features

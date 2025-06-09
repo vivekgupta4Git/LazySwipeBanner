@@ -23,7 +23,7 @@ import androidx.compose.runtime.rememberUpdatedState
  * @return A lambda that returns the current [LazySwipeBannerLayoutItemProviderImpl].
  */
 @Composable
-fun rememberLazySwipeBannerItemProviderLambda(
+internal fun rememberLazySwipeBannerItemProviderLambda(
     state: LazySwipeBannerState,
     content: LazySwipeBannerItemScope.()-> Unit,
     key: ((Int) -> Any)?

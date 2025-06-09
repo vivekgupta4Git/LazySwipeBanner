@@ -26,7 +26,7 @@ import androidx.compose.foundation.lazy.layout.MutableIntervalList
  * @see LazySwipeBannerLayoutInterval
  * @see LazySwipeBannerLayoutIntervalContent
  */
-class SwipeBannerSwipeBannerLayoutIntervalContent(
+internal class SwipeBannerSwipeBannerLayoutIntervalContent(
     val itemContent: LazySwipeBannerItemScope.()-> Unit,
     val key: ((Int) -> Any)?,
     val size: Int

@@ -11,9 +11,25 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * A composable function that displays a stack of items that can be swiped through.
+ *
+ * This composable displays a stack of items, with the currently selected item in the center.
+ * The user can swipe left or right to switch to the next or previous item.
+ *
+ * @param modifier The modifier to apply to this component.
+ * @param state The state of the stack. This state must be remembered and passed to this composable.
+ * @param itemOffset The offset between each item in the stack. Defaults to 50.dp.
+ * @param key A lambda that generates a stable key for each item based on its index. This key is
+ * used to help Compose track the state of each item. Defaults to null.
+ * @param itemContent A lambda that generates the content for each item. This lambda is expected to
+ * accept a [LazySwipeBannerItemScope] and an integer index, and produce the corresponding UI
+ * content for that index.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazySwipeBanner(
@@ -112,7 +128,7 @@ fun LazySwipeBanner(
                         placeable.placeRelative(
                             baseX,
                             baseY,
-                            2f
+                            1f
                         )
                     }
 
@@ -130,7 +146,7 @@ fun LazySwipeBanner(
                             Pair(baseX + offsetValue, baseY)
                         }
 
-                        placeable.placeRelative(x, y)
+                        placeable.placeRelative(x, y, 0f)
                     }
 
                     2 -> {
@@ -147,7 +163,7 @@ fun LazySwipeBanner(
                             Pair(baseX - offsetValue, baseY)
                         }
 
-                        placeable.placeRelative(x, y)
+                        placeable.placeRelative(x, y, 0f)
                     }
 
                 }

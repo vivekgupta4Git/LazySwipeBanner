@@ -1,8 +1,19 @@
 package com.ruviapps.lazy.swipe
 
 import androidx.compose.foundation.lazy.layout.IntervalList
+import androidx.compose.foundation.lazy.layout.LazyLayoutItemProvider
 import androidx.compose.foundation.lazy.layout.getDefaultLazyLayoutKey
 
+/**
+ * Provides a list of items to be displayed in a custom LazyStack layout.
+ *
+ * This abstract class wraps a composable content function and associates it with a key factory and
+ * a total number of items (size) to be displayed as a single interval. It is used as a scope for
+ * [LazyLayoutItemProvider] to access the provided content.
+ *
+ * @see LazySwipeBannerLayoutIntervalContent.Interval
+ * @see LazyLayoutItemProvider
+ */
 abstract class LazySwipeBannerLayoutIntervalContent<Interval : LazySwipeBannerLayoutIntervalContent.Interval> {
     abstract val intervals: IntervalList<Interval>
 

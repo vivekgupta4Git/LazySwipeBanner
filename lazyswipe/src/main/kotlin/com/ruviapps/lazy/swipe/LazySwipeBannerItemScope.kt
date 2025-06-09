@@ -3,10 +3,20 @@ package com.ruviapps.lazy.swipe
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import com.ruviapps.lazy.swipe.LazySwipeBannerItemAnimationConfig.Companion.RotationAxis
 import kotlin.math.absoluteValue
 
-typealias LazySwipeBannerLayoutComposable = @Composable (LazySwipeBannerItemScope.(Int) -> Unit)
+/**
+ * Represents a composable function type for items within a LazySwipeBanner.
+ *
+ * This type alias defines a lambda that receives a [LazySwipeBannerItemScope] and an item index,
+ * and emits the corresponding composable content for that index.
+ *
+ * @see LazySwipeBannerItemScope
+ */
+internal typealias LazySwipeBannerLayoutComposable = @Composable (LazySwipeBannerItemScope.(Int) -> Unit)
 
 /**
  * Scope for [items] content.
@@ -18,11 +28,7 @@ interface LazySwipeBannerItemScope {
      * @param count the items count
      * @param key a factory of stable and unique keys representing the item. Using the same key for
      *   multiple items in the list is not allowed. Type of the key should be saveable via Bundle on
-     *   Android. If null is passed the position in the list will represent the key. When you
-     *   specify the key the scroll position will be maintained based on the key, which means if you
-     *   add/remove items before the current visible item the item with the given key will be kept
-     *   as the first visible one. This can be overridden by calling 'requestScrollToItem' on the
-     *   'LazyStackState'.
+     *   Android. If null is passed the position in the list will represent the key.
      * @param contentType a factory of the content types for the item. The item compositions of the
      *   same type could be reused more efficiently. Note that null is a valid type and items of
      *   such type will be considered compatible.
@@ -34,6 +40,23 @@ interface LazySwipeBannerItemScope {
         contentType: (index: Int) -> Any? = { null },
         itemContent: LazySwipeBannerLayoutComposable
     )
+
+    /**
+     * Applies an animation effect to a LazySwipeBanner item using the specified configuration.
+     *
+     * @receiver The Modifier to which the animation effect will be applied.
+     * @param isCenterItem A Boolean indicating whether the item is the center item in the banner.
+     *                     This affects the scale, alpha, and transform origin used in the animation.
+     * @param state The current state of the LazySwipeBanner, which provides information such as
+     *              swipe offset and orientation.
+     * @param enableRotation A Boolean flag indicating whether rotation effects should be applied.
+     *                       If true, the item will rotate based on the swipe offset.
+     * @param config The configuration for the animation, including properties such as rotation
+     *               divisor, camera distance, scale, alpha, and transform origins for center and
+     *               side items.
+     * @return A Modifier with the animation effect applied, based on the provided parameters and
+     *         the current state of the LazySwipeBanner.
+     */
     fun Modifier.lazySwipeBannerAnimatedItem(
         isCenterItem: Boolean,
         state: LazySwipeBannerState,
@@ -41,41 +64,45 @@ interface LazySwipeBannerItemScope {
         config: LazySwipeBannerItemAnimationConfig = LazySwipeBannerItemAnimationConfig.Default
     ): Modifier = this.then(
         Modifier.Companion.graphicsLayer {
-            val rotationY =
-                if (enableRotation) state.swipeOffset.value / config.rotationDivisor.coerceAtLeast(
-                    1f
-                ) else 0f
-            this.rotationY = rotationY
-
-            this.cameraDistance =
-                if (enableRotation) density.absoluteValue * config.cameraDistance else 0f
-
-            if (enableRotation)
-                this.transformOrigin =
-                    if (isCenterItem) config.transformOriginCenter else config.transformOriginSide
+            //Rotation based animation
+            if (enableRotation) {
+                val rotation = state.swipeOffset.value / config.rotationDivisor.coerceAtLeast(1f)
+                when (config.rotationAxis) {
+                    RotationAxis.X_AXIS -> this.rotationX = rotation
+                    RotationAxis.Y_AXIS -> this.rotationY = rotation
+                    RotationAxis.Z_AXIS -> this.rotationZ = rotation
+                }
+                this.cameraDistance = density.absoluteValue * config.cameraDistance
+            } else {
+                this.rotationY = 0f
+                this.rotationZ = 0f
+                this.rotationX = 0f
+                this.cameraDistance = 0f
+            }
+            this.transformOrigin =
+                if (isCenterItem) config.transformOriginCenter else config.transformOriginSide
 
             val scale = if (isCenterItem) config.scaleCenter else config.scaleSide
             val alpha = if (isCenterItem) config.alphaCenter else config.alphaSide
-            val translation = state.swipeOffset.value
-
             this.scaleX = scale
             this.scaleY = scale
             this.alpha = alpha
-            if (state.orientation == Orientation.Horizontal)
-                this.translationX = if (isCenterItem) translation else
-                    if (config.enablePeekAnimation)
-                        -translation / config.peekDuringAnimationDivisor.coerceAtLeast(1f)
-                    else
-                        0f
-            else
-                this.translationY =
-                    if (isCenterItem) translation else
-                        if (config.enablePeekAnimation)
-                            -translation / config.peekDuringAnimationDivisor.coerceAtLeast(1f)
-                        else
-                            0f
-        })
 
+            val centerItemTranslation = state.swipeOffset.value
+            val sideItemTranslation = if (config.enablePeekAnimation)
+                -centerItemTranslation / config.peekDuringAnimationDivisor.coerceAtLeast(1f)
+            else
+                0f
+
+            if(config.enableTranslation){
+                if (state.orientation == Orientation.Horizontal)
+                    this.translationX = if (isCenterItem) centerItemTranslation else sideItemTranslation
+                else
+                    this.translationY =
+                        if (isCenterItem) centerItemTranslation else sideItemTranslation
+            }
+
+        })
 }
 
 /**
@@ -84,10 +111,7 @@ interface LazySwipeBannerItemScope {
  * @param items the data list
  * @param key a factory of stable and unique keys representing the item. Using the same key for
  *   multiple items in the list is not allowed. Type of the key should be saveable via Bundle on
- *   Android. If null is passed the position in the list will represent the key. When you specify
- *   the key the scroll position will be maintained based on the key, which means if you add/remove
- *   items before the current visible item the item with the given key will be kept as the first
- *   visible one. This can be overridden by calling 'requestScrollToItem' on the 'LazyStackState'.
+ *   Android. If null is passed the position in the list will represent the key.
  * @param contentType a factory of the content types for the item. The item compositions of the same
  *   type could be reused more efficiently. Note that null is a valid type and items of such type
  *   will be considered compatible.
@@ -112,10 +136,7 @@ inline fun <T> LazySwipeBannerItemScope.items(
  * @param items the data list
  * @param key a factory of stable and unique keys representing the item. Using the same key for
  *   multiple items in the list is not allowed. Type of the key should be saveable via Bundle on
- *   Android. If null is passed the position in the list will represent the key. When you specify
- *   the key the scroll position will be maintained based on the key, which means if you add/remove
- *   items before the current visible item the item with the given key will be kept as the first
- *   visible one. This can be overridden by calling 'requestScrollToItem' on the 'LazyStackState'.
+ *   Android. If null is passed the position in the list will represent the key.
  * @param contentType a factory of the content types for the item. The item compositions of the same
  *   type could be reused more efficiently. Note that null is a valid type and items of such type
  *   will be considered compatible.
@@ -141,10 +162,7 @@ inline fun <T> LazySwipeBannerItemScope.itemsIndexed(
  * @param items the data array
  * @param key a factory of stable and unique keys representing the item. Using the same key for
  *   multiple items in the list is not allowed. Type of the key should be saveable via Bundle on
- *   Android. If null is passed the position in the list will represent the key. When you specify
- *   the key the scroll position will be maintained based on the key, which means if you add/remove
- *   items before the current visible item the item with the given key will be kept as the first
- *   visible one. This can be overridden by calling 'requestScrollToItem' on the 'LazyStackState'.
+ *   Android. If null is passed the position in the list will represent the key
  * @param contentType a factory of the content types for the item. The item compositions of the same
  *   type could be reused more efficiently. Note that null is a valid type and items of such type
  *   will be considered compatible.
