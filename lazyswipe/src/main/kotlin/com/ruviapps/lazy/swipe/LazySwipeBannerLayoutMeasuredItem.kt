@@ -1,9 +1,6 @@
 package com.ruviapps.lazy.swipe
 
 import androidx.collection.mutableIntObjectMapOf
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
@@ -36,7 +33,7 @@ internal abstract class LazySwipeBannerLayoutMeasuredItemProvider<T : LazySwipeB
 
     abstract fun getAndMeasure(index: Int, lane: Int, span: Int, constraints: Constraints): T
 
-    fun LazyLayoutMeasureScope.getPlaceable(
+    fun LazySwipeBannerMeasureScope.getPlaceable(
         index: Int,
         constraints: Constraints
     ) : List<Placeable>{
@@ -52,18 +49,6 @@ internal abstract class LazySwipeBannerLayoutMeasuredItemProvider<T : LazySwipeB
             }
         }
     }
-}
-
-@Stable
-sealed interface LazyLayoutMeasureScope : MeasureScope {
-
-    /**
-     * Compose an item of lazy layout.
-     *
-     * @param index the item index. Should be no larger that [LazySwipeBannerLayoutItemProviderImpl.itemCount].
-     * @return List of [Measurable]s
-     */
-    fun compose( index: Int): List<Measurable>
 }
 
 

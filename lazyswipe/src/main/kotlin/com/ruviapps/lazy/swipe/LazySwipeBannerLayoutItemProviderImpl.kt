@@ -21,8 +21,9 @@ import androidx.compose.runtime.Composable
  */
 @OptIn(ExperimentalFoundationApi::class)
 class LazySwipeBannerLayoutItemProviderImpl(
-    private val intervalContent: LazySwipeBannerLayoutIntervalContent<LazySwipeBannerLayoutInterval>
-) : LazyLayoutItemProvider {
+    private val intervalContent: LazySwipeBannerLayoutIntervalContent<LazySwipeBannerLayoutInterval>,
+    override val itemScope: LazySwipeBannerItemScope
+    ) : LazySwipeBannerItemProvider {
 
     // Scope used to pass to each composable item
     private val stackScopeImpl = LazySwipeBannerItemScopeImpl()
@@ -55,4 +56,9 @@ class LazySwipeBannerLayoutItemProviderImpl(
      * Returns the content type of the item at the given index (used for recycling).
      */
     override fun getContentType(index: Int): Any? = intervalContent.getContentType(index)
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+internal interface LazySwipeBannerItemProvider : LazyLayoutItemProvider{
+    val itemScope : LazySwipeBannerItemScope
 }

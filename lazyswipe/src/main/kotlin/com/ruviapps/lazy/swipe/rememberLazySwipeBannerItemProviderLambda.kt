@@ -31,6 +31,7 @@ internal fun rememberLazySwipeBannerItemProviderLambda(
     // Keeps the latest reference to content composable across recompositions
     val latestContent = rememberUpdatedState(content)
     val latestKey = rememberUpdatedState(key)
+    val scope = LazySwipeBannerItemScopeImpl()
     return remember(
         state, latestContent, latestKey, state.itemCount
     ) {
@@ -47,7 +48,8 @@ internal fun rememberLazySwipeBannerItemProviderLambda(
         val itemProviderState = derivedStateOf(referentialEqualityPolicy()) {
             val intervalContent = intervalContentState.value
             LazySwipeBannerLayoutItemProviderImpl(
-                intervalContent = intervalContent
+                intervalContent = intervalContent,
+                itemScope = scope
             )
         }
 
